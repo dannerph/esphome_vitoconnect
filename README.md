@@ -19,16 +19,23 @@ uart:
     data_bits: 8
     parity: EVEN
     stop_bits: 2
+    # debug:
+    #   direction: BOTH
+    #   dummy_receiver: false
+    #   after:
+    #     delimiter: [0x06]
+    #   sequence:
+    #     - lambda: UARTDebug::log_hex(direction, bytes, ':');
 
 vitoconnect:
   uart_id: uart_vitoconnect
-  protocol: P300                # set protocol to KW or P300
+  protocol: P300                # set protocol to KW or P300 (currently only P300 is supported)
+  update_interval: 30s
 
 
 sensor:
   - platform: vitoconnect
-    id: outside_temperature
-    name: "Außen Temperatur"
+    name: "Außentemperatur"
     address: 0x01C1             # vitoconnect: address of the value
     length: 2                   # vitoconnect: length of the value
     unit_of_measurement: "°C"
@@ -43,6 +50,10 @@ sensor:
     accuracy_decimals: 1
     filters:
       - lambda: return x / 3600.0;
+binary_sensor:
+  - platform: vitoconnect
+    name: "Status Verdichter"
+    address: 0x0400
 ```
 
 Tested with OptoLink ESP32 adapter from here:
@@ -50,7 +61,7 @@ Tested with OptoLink ESP32 adapter from here:
 
 ## Credits
 
-Built on top of [VitoWifi] by [Bert Melis] and inspired by [vitowifi_esphome] by [Philipp Hack].
+Built based on [VitoWifi] by [Bert Melis] and inspired by [vitowifi_esphome] by [Philipp Hack].
 
 ## License
 
