@@ -11,10 +11,22 @@ Address, length and post processing can be retrieved from <https://github.com/op
 external_components:
   - source: github://dannerph/esphome_vitoconnect
 
+esphome:
+  name: viessmann-reader
+  friendly_name: vitoconnect
+
+esp32:
+  board: esp32doit-devkit-v1
+
+# esp8266:
+  # board: nodemcuv2
+
 uart:
   - id: uart_vitoconnect
     rx_pin: GPIO16              # ESP32 RX2
     tx_pin: GPIO17              # ESP32 TX2
+    #rx_pin: GPIO03             # ESP8266 RX
+    #tx_pin: GPIO01             # ESP8266 TX
     baud_rate: 4800
     data_bits: 8
     parity: EVEN
@@ -49,6 +61,7 @@ sensor:
     unit_of_measurement: "h"
     accuracy_decimals: 1
     filters:
+      # - multiply: 0.000277777777777778 # use multiply filter for ESP8266
       - lambda: return x / 3600.0;
 binary_sensor:
   - platform: vitoconnect
