@@ -44,7 +44,6 @@ vitoconnect:
   protocol: P300                # set protocol to KW or P300 (currently only P300 is supported)
   update_interval: 30s
 
-
 sensor:
   - platform: vitoconnect
     name: "Außentemperatur"
@@ -80,6 +79,12 @@ Built based on [VitoWifi] by [Bert Melis] and inspired by [vitowifi_esphome] by 
 
 MIT License
 Copyright (c) 2023 Philipp Danner
+
+## Support Development
+
+### Paypal
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=848P2G8EA68PJ)
 
 [ESPHome]: https://esphome.io/
 [VitoWifi]: https://github.com/bertmelis/VitoWifi
