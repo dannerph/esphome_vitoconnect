@@ -66,7 +66,7 @@ void OptolinkKW::loop() {
   }
   if (_queue.size() > 0 && millis() - _lastMillis > 5000UL) {  // if no ACK is coming, reset connection
     _tryOnError(TIMEOUT);
-    _state = RESET;
+    _state = INIT;
     _uart->flush();
   }
   // TODO(@bertmelis): move timeouts here, clear queue on timeout
@@ -84,7 +84,7 @@ void OptolinkKW::_init() {
     if (millis() - _lastMillis > 1000UL) {  // try to reset if Vitotronic is in a connected state with the P300 protocol
       _lastMillis = millis();
       const uint8_t buff[] = {0x04};
-      _uart->write(buff, sizeof(buff));
+      _uart->write_array(buff, sizeof(buff));
     }
   }
 }
@@ -109,7 +109,7 @@ void OptolinkKW::_idle() {
 
 void OptolinkKW::_sync() {
   const uint8_t buff[1] = {0x01};
-  _uart->write(buff, sizeof(buff));
+  _uart->write_array(buff, sizeof(buff));
   _state = SEND;
   _send();
 }
