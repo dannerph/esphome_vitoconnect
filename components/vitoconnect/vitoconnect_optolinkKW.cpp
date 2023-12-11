@@ -151,6 +151,8 @@ void OptolinkKW::_receive() {
     _lastMillis = millis();
   }
   if (_rcvBufferLen == _rcvLen) {  // message complete, TODO: check message (eg 0x00 for READ messages)   
+    ESP_LOGD(TAG, "Adding datapoint with address %x and length %d", dp->address, dp->length);
+    _tryOnData(dp->data, dp->length);
     _state = IDLE;
     _lastMillis = millis();
     return;
