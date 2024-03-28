@@ -41,7 +41,7 @@ uart:
 
 vitoconnect:
   uart_id: uart_vitoconnect
-  protocol: P300                # set protocol to KW or P300 (currently only P300 is supported)
+  protocol: P300                # set protocol to KW or P300
   update_interval: 30s
 
 sensor:
@@ -62,6 +62,14 @@ sensor:
     filters:
       # - multiply: 0.000277777777777778 # use multiply filter for ESP8266
       - lambda: return x / 3600.0;
+  - platform: vitoconnect
+    name: "Brennerleistung"
+    address: 0xA38F
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
 binary_sensor:
   - platform: vitoconnect
     name: "Status Verdichter"

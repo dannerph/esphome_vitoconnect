@@ -18,7 +18,7 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
 
   
   if (_length == 1){         // Commonly percentage with factor /2
-    publish_state((float) value);
+    publish_state((float) data[0]);
   }
   else if (_length == 2){   // Commonly temperature with factor /10 or /100
     int16_t tmp = 0;
