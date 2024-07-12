@@ -26,7 +26,6 @@
 // #include "vitoconnect_DP.h"
 #include "vitoconnect_optolink.h"
 #include "vitoconnect_optolinkP300.h"
-#include "vitoconnect_optolinkKW.h"
 #include "vitoconnect_datapoint.h"
 
 using namespace std;
