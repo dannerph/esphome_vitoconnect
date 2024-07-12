@@ -32,7 +32,7 @@ void VitoConnect::setup() {
     if (this->protocol.compare("P300") == 0) {
         _optolink = new OptolinkP300(this);
     } else if (this->protocol.compare("KW") == 0) {
-        ESP_LOGW(TAG, "Viessmann KW protocol not yet implemented");
+        _optolink = new OptolinkKW(this);
     } else {
       ESP_LOGW(TAG, "Unknown protocol.");
     }
