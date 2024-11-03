@@ -75,7 +75,6 @@ void OptolinkKW::loop() {
 void OptolinkKW::_init() {
   if (_uart->available()) {
     if (_uart->peek() == 0x05) {
-      ESP_LOGD(TAG, "Received telegram start byte 0x05");
       _state = IDLE;
       _idle();
     } else {
@@ -93,7 +92,6 @@ void OptolinkKW::_init() {
 void OptolinkKW::_idle() {
   if (_uart->available()) {
     if (_uart->read() == 0x05) {
-      ESP_LOGD(TAG, "Received telegram start byte 0x05");
       _lastMillis = millis();
       if (_queue.size() > 0) {
         _state = SYNC;
