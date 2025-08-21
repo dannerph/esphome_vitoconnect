@@ -4,3 +4,4 @@
 /.esphome/
 /viessmann.yaml
 __pycache__/
+.venv

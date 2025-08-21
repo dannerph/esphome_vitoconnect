@@ -7,7 +7,7 @@ from .. import vitoconnect_ns, VitoConnect, CONF_VITOCONNECT_ID
 DEPENDENCIES = ["vitoconnect"]
 OPTOLINKSensor = vitoconnect_ns.class_("OPTOLINKSensor", sensor.Sensor)
 
-CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend({
+CONFIG_SCHEMA = sensor.sensor_schema(OPTOLINKSensor).extend({
     cv.GenerateID(): cv.declare_id(OPTOLINKSensor),
     cv.GenerateID(CONF_VITOCONNECT_ID): cv.use_id(VitoConnect),
     cv.Required(CONF_ADDRESS): cv.uint16_t,
