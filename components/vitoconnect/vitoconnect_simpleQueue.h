@@ -150,7 +150,7 @@ class SimpleQueue {
   size_t _firstPosition;
   size_t _nextPosition;
   size_t _count;
-  const size_t _size;
+  size_t _size;
 };
 
 }  // namespace vitoconnect
