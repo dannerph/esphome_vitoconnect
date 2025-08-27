@@ -48,10 +48,15 @@ class Datapoint {
   static void onData(std::function<void(uint8_t[], uint8_t, Datapoint* dp)> callback);
   void onError(uint8_t, Datapoint* dp);
 
+  virtual void encode(uint8_t* raw, uint8_t length);
   virtual void encode(uint8_t* raw, uint8_t length, void* data);
   virtual void decode(uint8_t* data, uint8_t length, Datapoint* dp = nullptr);
 
+  uint32_t getLastUpdate() { return _last_update; };
+  void clearLastUpdate() { this->_last_update = 0; }
+
  protected:
+  uint32_t _last_update = 0;
   uint16_t _address;
   uint8_t _length;
   static std::function<void(uint8_t[], uint8_t, Datapoint* dp)> _stdOnData;
