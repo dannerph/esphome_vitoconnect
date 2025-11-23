@@ -1,18 +1,22 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
-from esphome.const import CONF_ID, CONF_NAME, CONF_ADDRESS, CONF_LENGTH #, CONF_TYPE 
-from .. import vitoconnect_ns, VitoConnect, CONF_VITOCONNECT_ID
+from esphome.const import CONF_ADDRESS, CONF_LENGTH
+
+from .. import CONF_VITOCONNECT_ID, VitoConnect, vitoconnect_ns
 
 DEPENDENCIES = ["vitoconnect"]
 OPTOLINKSensor = vitoconnect_ns.class_("OPTOLINKSensor", sensor.Sensor)
 
-CONFIG_SCHEMA = sensor.sensor_schema(OPTOLINKSensor).extend({
-    cv.GenerateID(): cv.declare_id(OPTOLINKSensor),
-    cv.GenerateID(CONF_VITOCONNECT_ID): cv.use_id(VitoConnect),
-    cv.Required(CONF_ADDRESS): cv.uint16_t,
-    cv.Required(CONF_LENGTH): cv.uint8_t,
-})
+CONFIG_SCHEMA = sensor.sensor_schema(OPTOLINKSensor).extend(
+    {
+        cv.GenerateID(): cv.declare_id(OPTOLINKSensor),
+        cv.GenerateID(CONF_VITOCONNECT_ID): cv.use_id(VitoConnect),
+        cv.Required(CONF_ADDRESS): cv.uint16_t,
+        cv.Required(CONF_LENGTH): cv.uint8_t,
+    }
+)
+
 
 async def to_code(config):
     var = await sensor.new_sensor(config)

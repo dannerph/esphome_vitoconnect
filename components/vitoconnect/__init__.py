@@ -16,19 +16,18 @@ CONF_VITOCONNECT_ID = "vitoconnect_id"
 
 OPTOLINK_PROTOCOL = {
     "P300": "P300",
-    "KW":"KW",
+    "KW": "KW",
 }
 
-CONFIG_SCHEMA = (
-    cv.Schema(
-        {
-            cv.GenerateID(): cv.declare_id(VitoConnect),
-            cv.Required(CONF_PROTOCOL): cv.enum(OPTOLINK_PROTOCOL, upper=True, space="_"),
-            cv.Optional(CONF_UPDATE_INTERVAL, default="60s"): cv.positive_time_period_milliseconds,
-        }
-    )
-    .extend(uart.UART_DEVICE_SCHEMA)
-)
+CONFIG_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(VitoConnect),
+        cv.Required(CONF_PROTOCOL): cv.enum(OPTOLINK_PROTOCOL, upper=True, space="_"),
+        cv.Optional(
+            CONF_UPDATE_INTERVAL, default="60s"
+        ): cv.positive_time_period_milliseconds,
+    }
+).extend(uart.UART_DEVICE_SCHEMA)
 
 
 async def to_code(config):

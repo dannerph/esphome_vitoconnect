@@ -86,7 +86,7 @@ Built based on [VitoWifi] by [Bert Melis] and inspired by [vitowifi_esphome] by 
 ## License
 
 MIT License
-Copyright (c) 2023 Philipp Danner
+Copyright (c) 2025 Philipp Danner
 
 ## Support Development
 

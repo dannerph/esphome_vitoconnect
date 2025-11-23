@@ -1,0 +1,61 @@
+external_components:
+  - source: components
+  # - source: github://dannerph/esphome_vitoconnect
+
+esphome:
+  name: viessmann-reader
+  friendly_name: vitoconnect
+
+esp8266:
+  board: nodemcuv2
+
+uart:
+  - id: uart_vitoconnect
+    rx_pin: GPIO03 # ESP8266 RX
+    tx_pin: GPIO01 # ESP8266 TX
+    baud_rate: 4800
+    data_bits: 8
+    parity: EVEN
+    stop_bits: 2
+    # debug:
+    #   direction: BOTH
+    #   dummy_receiver: false
+    #   after:
+    #     delimiter: [0x06]
+    #   sequence:
+    #     - lambda: UARTDebug::log_hex(direction, bytes, ':');
+
+vitoconnect:
+  uart_id: uart_vitoconnect
+  protocol: P300 # set protocol to KW or P300
+  update_interval: 30s
+
+sensor:
+  - platform: vitoconnect
+    name: "Außentemperatur"
+    address: 0x01C1 # vitoconnect: address of the value
+    length: 2 # vitoconnect: length of the value
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+  - platform: vitoconnect
+    name: "Betriebsstunden Verdichter"
+    address: 0x0580
+    length: 4
+    unit_of_measurement: "h"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.000277777777777778 # use multiply filter for ESP8266
+  - platform: vitoconnect
+    name: "Brennerleistung"
+    address: 0xA38F
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
+binary_sensor:
+  - platform: vitoconnect
+    name: "Status Verdichter"
+    address: 0x0400
