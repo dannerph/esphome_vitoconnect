@@ -3,6 +3,8 @@
 namespace esphome {
 namespace vitoconnect {
 
+static const char *TAG = "vitoconnect.sensor";
+
 OPTOLINKSensor::OPTOLINKSensor(){
   // empty
 }

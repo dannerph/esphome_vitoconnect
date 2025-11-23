@@ -1,21 +1,28 @@
 #pragma once
 
-#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/number/number.h"
 #include "../vitoconnect_datapoint.h"
+
 
 namespace esphome {
 namespace vitoconnect {
-  
-class OPTOLINKBinarySensor : public binary_sensor::BinarySensor, public Datapoint {
+    
+class OPTOLINKNumber : public number::Number, public Datapoint {
 
   public:
-    OPTOLINKBinarySensor();
-    ~OPTOLINKBinarySensor();
+    OPTOLINKNumber();
+    ~OPTOLINKNumber();
+
+    virtual void control(float value) override;
 
     void decode(uint8_t* data, uint8_t length, Datapoint* dp = nullptr) override;
     void encode(uint8_t* raw, uint8_t length, void* data) override;
     void encode(uint8_t* raw, uint8_t length, float data);
+    void encode(uint8_t* raw, uint8_t length) override;
 
+    void setDivRatio(size_t div) { this->_div_ratio = div; }
+  private:
+    size_t _div_ratio = 1;
 };
 
 }  // namespace vitoconnect

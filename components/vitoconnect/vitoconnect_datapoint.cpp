@@ -42,6 +42,10 @@ void Datapoint::onData(std::function<void(uint8_t[], uint8_t, Datapoint* dp)> ca
   _stdOnData = callback;
 }
 
+void Datapoint::encode(uint8_t* raw, uint8_t length) {
+  memset(raw, 0, _length);
+}
+
 void Datapoint::encode(uint8_t* raw, uint8_t length, void* data) {
   if (length != _length) {
     // display error about length

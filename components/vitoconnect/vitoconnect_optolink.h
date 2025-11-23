@@ -66,7 +66,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef VITOWIFI_MAX_QUEUE_LENGTH
   /** @brief Maximum number of datapoints the Optolink queue can hold
    */
-  #define VITOWIFI_MAX_QUEUE_LENGTH 20
+  #define VITOWIFI_MAX_QUEUE_LENGTH 64
 #endif
 #ifndef MAX_DP_LENGTH
   /** @brief Maximum size in bytes of a datapoint

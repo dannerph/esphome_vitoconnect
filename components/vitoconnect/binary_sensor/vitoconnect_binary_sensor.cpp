@@ -3,7 +3,7 @@
 namespace esphome {
 namespace vitoconnect {
 
-static const char *TAG = "vitoconnect_binary_sensor";
+static const char *TAG = "vitoconnect.binary_sensor";
 
 OPTOLINKBinarySensor::OPTOLINKBinarySensor(){
   // empty
