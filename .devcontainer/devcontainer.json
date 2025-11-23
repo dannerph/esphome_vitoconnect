@@ -6,6 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 	"features": {
 		"ghcr.io/devcontainers-extra/features/protoc:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/jsburckhardt/devcontainer-features/uv:latest": {}
 	},
 	"postStartCommand": "uv sync",
