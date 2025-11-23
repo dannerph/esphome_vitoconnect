@@ -2,11 +2,11 @@
 
 #include "esphome/components/number/number.h"
 #include "../vitoconnect_datapoint.h"
-
+#include "esphome/core/hal.h"
 
 namespace esphome {
 namespace vitoconnect {
-    
+
 class OPTOLINKNumber : public number::Number, public Datapoint {
 
   public:

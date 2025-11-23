@@ -18,7 +18,6 @@
 */
 
 #include "vitoconnect.h"
-#include "number/vitoconnect_number.h"
 
 namespace esphome {
 namespace vitoconnect {
@@ -46,7 +45,7 @@ void VitoConnect::setup() {
       // add onData and onError callbacks
       _optolink->onData(&VitoConnect::_onData);
       _optolink->onError(&VitoConnect::_onError);
-      
+
       // set initial state
       _optolink->begin();
 
@@ -74,17 +73,17 @@ void VitoConnect::update() {
     if(dp->getLastUpdate() != 0) {
       foundDirty = true;
       ESP_LOGD(TAG, "Datapoint with address %x was modified and needs to be written.", dp->getAddress());
-      
+
       uint8_t* data = new uint8_t[dp->getLength()];
       dp->encode(data, dp->getLength());
 
       // write the modified datapoint
-      CbArg* writeCbArg = new CbArg(this, dp, true, dp->getLastUpdate());        
+      CbArg* writeCbArg = new CbArg(this, dp, true, dp->getLastUpdate());
       if (!_optolink->write(dp->getAddress(), dp->getLength(), data, reinterpret_cast<void*>(writeCbArg))) {
         delete writeCbArg;
         return;
       }
-      
+
       // read the same datapoint to verify the previous write
       CbArg* readCbArg = new CbArg(this, dp, false, 0, data);
       if (!_optolink->read(dp->getAddress(), dp->getLength(), reinterpret_cast<void*>(readCbArg))) {
@@ -93,7 +92,7 @@ void VitoConnect::update() {
       }
     }
   }
-  
+
   if(foundDirty) {
     ESP_LOGD(TAG, "Found dirty datapoint(s), skip polling cycle.");
     return;
@@ -115,7 +114,7 @@ void VitoConnect::_onData(uint8_t* data, uint8_t len, void* arg) {
     if (!cbArg->w && cbArg->d == nullptr) {
       ESP_LOGD(TAG, "Datapoint with address %x is eventually being written, waiting for confirmation.", cbArg->dp->getAddress());
     } else if (cbArg->w) { // this was a write operation
-      ESP_LOGD(TAG, "Write operation for datapoint with address %x %s.", 
+      ESP_LOGD(TAG, "Write operation for datapoint with address %x %s.",
              cbArg->dp->getAddress(), data[0] == 0x00 ? "has been completed" : "failed");
     } else if (cbArg->d != nullptr) { // cbArg->d is only set if this read is intended to verify a previous write
       ESP_LOGD(TAG, "Verifying received data for datapoint with address %x.", cbArg->dp->getAddress());

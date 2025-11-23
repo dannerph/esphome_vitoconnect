@@ -5,3 +5,5 @@
 /viessmann.yaml
 __pycache__/
 .venv
+viessmann-reader.yaml
+secrets.yaml
