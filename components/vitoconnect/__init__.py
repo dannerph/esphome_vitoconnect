@@ -17,6 +17,7 @@ CONF_VITOCONNECT_ID = "vitoconnect_id"
 OPTOLINK_PROTOCOL = {
     "P300": "P300",
     "KW": "KW",
+    "GWG": "GWG",
 }
 
 CONFIG_SCHEMA = cv.Schema(
