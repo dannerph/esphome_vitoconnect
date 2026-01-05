@@ -39,7 +39,7 @@ external_components:
       type: git
       url: github://dannerph/esphome_vitoconnect
       # url: https://github.com/uwen70/esphome_vitoconnect
-      # ref: gwg             # oder dein Branch-Name, wenn GWG dort liegt
+      # ref: master          # oder dein Branch-Name, wenn GWG dort liegt
     # refresh: 0s            # für Tests: bei jedem Check neu laden
     components: [vitoconnect]
 
