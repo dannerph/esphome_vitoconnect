@@ -1,6 +1,6 @@
 # Vitoconnect for ESPHome
 
-Integration of Viessmann Optolink protocol into [ESPHome]. I named this component after the cloud reading unit of Viessmann: Vitoconnect.
+Integration of Viessmann Optolink protocols [GWG], KW and P300 into [ESPHome]. This component is named after the cloud reading unit of Viessmann: Vitoconnect.
 
 ## Usage
 
@@ -41,7 +41,7 @@ uart:
 
 vitoconnect:
   uart_id: uart_vitoconnect
-  protocol: P300                # set protocol to KW or P300
+  protocol: P300                # set protocol to GWG, KW or P300
   update_interval: 30s
 
 sensor:
@@ -99,3 +99,4 @@ Copyright (c) 2025 Philipp Danner
 [vitowifi_esphome]: https://github.com/phha/vitowifi_esphome
 [Bert Melis]: https://github.com/bertmelis
 [Philipp Hack]: https://github.com/phha
+[GWG]: README_GWG.md

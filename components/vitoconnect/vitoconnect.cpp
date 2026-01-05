@@ -33,6 +33,8 @@ void VitoConnect::setup() {
         _optolink = new OptolinkP300(this);
     } else if (this->protocol.compare("KW") == 0) {
         _optolink = new OptolinkKW(this);
+    } else if (this->protocol.compare("GWG") == 0) {
+        _optolink = new OptolinkGWG(this);
     } else {
       ESP_LOGW(TAG, "Unknown protocol.");
     }

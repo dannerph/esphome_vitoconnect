@@ -1,0 +1,280 @@
+# --- Geraet Viesmann Type WB2 - GWG Protokoll ---
+#
+# Die WB2 ist mit Feuerungsautomat LGM29, Steuerung VR20 und
+# Bedienteil BES ausgestattet. Protokoll ist GWG.
+#
+# Ein Heizkreis (HKA) und ein Warmwasserboiler mit Temperatursensor,
+# kein Mischer, keine externe Steuerung, keine sonstigen Extras
+    
+esphome:
+  name: viessmann
+  friendly_name: Viessmann
+
+# Enable Home Assistant API
+#api:
+#  encryption:
+#    key: "***"
+
+#ota:
+#  - platform: esphome
+#    password: "***"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Viessmann Fallback Hotspot"
+    password: "1234567890"
+
+captive_portal:
+
+# Optional: for quick checks in the browser (http://IP/)
+web_server:
+  port: 80
+
+external_components:
+  - source:
+      type: git
+      url: github://dannerph/esphome_vitoconnect
+      # url: https://github.com/uwen70/esphome_vitoconnect
+      # ref: master          # oder dein Branch-Name, wenn GWG dort liegt
+    # refresh: 0s            # für Tests: bei jedem Check neu laden
+    components: [vitoconnect]
+
+esp32:
+  board: esp32-s2-saola-1   # set your board here
+  #board: esp32dev
+  #board: esp32doit-devkit-v1
+  framework:
+    type: esp-idf
+
+uart:
+  - id: uart_vitoconnect
+    # set your RX and TX pins according to your wiring
+    rx_pin: GPIO18  # ESP32-S2
+    tx_pin: GPIO17  # ESP32-S2
+    #rx_pin: GPIO16 # ESP32 RX2
+    #tx_pin: GPIO17 # ESP32 TX2
+    baud_rate: 4800
+    data_bits: 8
+    parity: EVEN
+    stop_bits: 2
+    # debug:
+    #   direction: BOTH
+    #   dummy_receiver: false
+    #   after:
+    #     delimiter: [0x06]
+    #   sequence:
+    #     - lambda: UARTDebug::log_hex(direction, bytes, ':');
+
+vitoconnect:
+  uart_id: uart_vitoconnect
+  protocol: GwG           # set protocol to GWG, KW or P300
+  update_interval: 30s    # min 10s for GWG
+
+# GWG protocol has only one byte adresses (0x00..0xFF)  
+# but there are different targets for read/write operations
+#
+# ALL WRITE OPERATIONS ARE UNTESTED AND UNSAVE!
+#
+# GWG protocol functions coded in MSB of address:
+# https://github.com/openv/openv/wiki/Protokoll-GWG
+# Anfrage 	            Funktion 	TelegrammByte (Typ)
+# VIRTUAL READ 	              01 	C7
+# VIRTUAL WRITE 	            02 	C4
+# PHYSICAL READ 	            03 	CB
+# PHYSICAL WRITE 	            04 	C8
+# EEPROM READ 	              05 	AE
+# EEPROM WRITE 	              06 	AD
+# PHYSICAL XRAM READ 	        49 	C5
+# PHYSICAL XRAM WRITE 	      50 	C3
+# PHYSICAL PORT READ 	        51 	6E
+# PHYSICAL PORT WRITE 	      52 	6D
+# PHYSICAL BE READ 	          53 	9E
+# PHYSICAL BE WRITE 	        54 	9D
+# PHYSICAL KMBUS RAM READ 	  65 	33
+# PHYSICAL KMBUS EEPROM READ 	67 	43
+
+sensor:
+  # --- Systeminfo ---
+
+  # virtual read 0x01 + Adr 0xF8
+  - platform: vitoconnect
+    name: "Systemidentifikation"
+    address: 0x01F8
+    length: 2
+  
+  # virtual read 0x01 + Adr 0xF8
+  - platform: vitoconnect
+    name: "Firmwareversion"
+    address: 0x01FB
+    length: 1
+  
+  # --- Aussentemperatur ---
+
+  - platform: vitoconnect
+    name: "Aussentemperatur"
+    address: 0x6F
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - lambda: |-
+          // Rohwert kommt als 0..255 an; in signed int8 umwandeln
+          int8_t s = (x > 127) ? (int8_t)(x - 256) : (int8_t)x;
+          return (float)s;
+      - multiply: 0.5
+
+
+  # --- Kessel ---
+
+  - platform: vitoconnect
+    name: "Kesseltemperatur Ist"
+    address: 0x70
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
+
+  - platform: vitoconnect
+    name: "Kesseltemperatur Soll"
+    address: 0x71
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
+
+
+  # --- Warmwasser ---
+
+  - platform: vitoconnect
+    name: "Warmwassertemperatur Ist"
+    address: 0x42
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
+
+  - platform: vitoconnect
+    name: "Warmwassertemperatur Soll"
+    address: 0x5C
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.5
+
+
+  # --- Raumtemperaturen ---
+
+  - platform: vitoconnect
+    name: "Raumtemperatur Tag Soll"
+    address: 0x53
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+
+  - platform: vitoconnect
+    name: "Raumtemperatur Nacht Soll"
+    address: 0x54
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+
+
+  # --- Heizkreis A (HKA) ---
+
+  - platform: vitoconnect
+    name: "HKA Niveau"
+    address: 0x64
+    length: 1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - lambda: |-
+          // Rohwert kommt als 0..255 an; in signed int8 umwandeln
+          int8_t s = (x > 127) ? (int8_t)(x - 256) : (int8_t)x;
+          return (float)s;
+    
+  - platform: vitoconnect
+    name: "HKA Neigung"
+    address: 0x65
+    length: 1
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.1
+      - lambda: |-
+          return ((float) lroundf(x * 10.0f)) / 10.0f;
+
+  # --- Betriebsstatus / Mode / State ---
+
+  # Fehlercode leicht verzögert
+  - platform: vitoconnect
+    name: "Fehlercode"
+    address: 0x3F
+    length: 1
+    accuracy_decimals: 0
+
+  # 6 heizen, 7 WWasser, 22 Brenner abkühlen (nach Heizen), 23 Brenner abkühlen (nach WWBereitung), 54 heizen
+  - platform: vitoconnect
+    name: "Brennerstatus"
+    address: 0x22
+    length: 1
+    accuracy_decimals: 0
+
+  # 0 - WW, 1 - Nachtabsenkung, 2 - Tagbetrieb, 3 - Heizen (Tag/Nacht)+ WW, 5 - aus
+  - platform: vitoconnect
+    name: "Betriebsprogramm"
+    address: 0x51
+    length: 1
+    accuracy_decimals: 0
+
+  # Werte 16 - Flamme aus, 48, 55, 69 - Flamme an; Taktung/Modulation des Brenners?  
+  - platform: vitoconnect
+    name: "Betriebsphase"
+    address: 0x9E
+    length: 1
+    accuracy_decimals: 0
+
+  # 1-WWBereitung, 2-heizen, 4-Kessel abkühlen
+  - platform: vitoconnect
+    name: "Heizbetrieb"
+    address: 0x3D
+    length: 1
+    accuracy_decimals: 0
+
+  # Heizkreispumpe zwischen 30 (Nachtabsenkung) und 98% (WWBereitung)
+  - platform: vitoconnect
+    name: "HKP Drehzahl Soll"
+    address: 0xB0
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+  
+  # eingestellte max und min Drehzahl der HKP beim Heizen
+  - platform: vitoconnect
+    name: "HKP max Drehzahl"
+    address: 0x37
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+
+  - platform: vitoconnect
+    name: "HKP min Drehzahl"
+    address: 0xA2
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+
+  # min  Nachtabsenkung?
+  - platform: vitoconnect
+    name: "HKP Drehzahl Absenkung"
+    address: 0xA1
+    length: 1
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
