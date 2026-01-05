@@ -83,7 +83,7 @@ sensor:
 ```
 For more parameters, see [example-gwg-protocol.yaml](example-gwg-protocol.yaml).
 
-Tested with OptoLink ESP32-S2 adapter from here:
+Tested with ESP32-S2 Board (Wemos S2 mini) and schematic from here:
 <https://github.com/openv/openv/wiki/ESPHome-Optolink>
 
 ## Home Assistant 
