@@ -71,6 +71,20 @@ class OptolinkDP {
    * @param obj Object to be copied.
    */
   OptolinkDP(const OptolinkDP& obj);
+  /**
+   * @brief Move constructor
+   */
+  OptolinkDP(OptolinkDP&& obj) noexcept;
+
+  /**
+   * @brief Copy-and-swap assignment operator
+   */
+  OptolinkDP& operator=(OptolinkDP other);
+
+  /**
+   * @brief Swap helper
+   */
+  friend void swap(OptolinkDP& a, OptolinkDP& b) noexcept;
 
   /**
    * @brief Destroy the OptolinkDP object

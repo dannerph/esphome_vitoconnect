@@ -24,6 +24,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "vitoconnect_optolinkDP.h"
+#include <utility>  // for std::swap
 
 namespace esphome {
 namespace vitoconnect {
@@ -57,6 +58,34 @@ OptolinkDP::OptolinkDP(const OptolinkDP& obj) {
     data = new uint8_t[length];
     memcpy(data, obj.data, length);
   }
+}
+
+OptolinkDP::OptolinkDP(OptolinkDP&& obj) noexcept :
+  address(obj.address),
+  length(obj.length),
+  write(obj.write),
+  data(obj.data),
+  arg(obj.arg) {
+    // leave obj in a valid state
+    obj.address = 0;
+    obj.length = 0;
+    obj.write = false;
+    obj.data = nullptr;
+    obj.arg = nullptr;
+}
+
+void swap(OptolinkDP& a, OptolinkDP& b) noexcept {
+  using std::swap;
+  swap(a.address, b.address);
+  swap(a.length, b.length);
+  swap(a.write, b.write);
+  swap(a.data, b.data);
+  swap(a.arg, b.arg);
+}
+
+OptolinkDP& OptolinkDP::operator=(OptolinkDP other) {
+  swap(*this, other);
+  return *this;
 }
 
 OptolinkDP::~OptolinkDP() {
