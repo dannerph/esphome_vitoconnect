@@ -23,6 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+// Modified by Stefan Bickel, 2026-01-08: Added Copy/Move logic for proper memory management.
+
 #include "vitoconnect_optolinkDP.h"
 #include <utility>  // for std::swap
 

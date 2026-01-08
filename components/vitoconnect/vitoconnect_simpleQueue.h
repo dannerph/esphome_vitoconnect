@@ -23,6 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+// Modified by Stefan Bickel, 2026-01-08: Pass by reference, still makes a copy when adding to the buffer. 
+
 /**
  * @file SimpleQueue.h
  * @brief SimpleQueue API

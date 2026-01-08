@@ -19,6 +19,8 @@
 
 #pragma once
 
+// #define VITOWIFI_MAX_QUEUE_LENGTH 64
+
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/uart/uart_component.h"
