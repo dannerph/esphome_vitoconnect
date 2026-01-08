@@ -88,7 +88,7 @@ class SimpleQueue {
    * @return true Element was successfully added.
    * @return false Element has not been added (eg. queue full).
    */
-  bool push(T t) {
+  bool push(const T& t) {
     if (_count < _size) {
       _buffer[_nextPosition++] = t;
       ++_count;
