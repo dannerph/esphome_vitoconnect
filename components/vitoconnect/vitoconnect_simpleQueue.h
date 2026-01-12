@@ -23,6 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
+// Modified by Stefan Bickel, 2026-01-08: Pass by reference, still makes a copy when adding to the buffer. 
+
 /**
  * @file SimpleQueue.h
  * @brief SimpleQueue API
@@ -88,7 +90,7 @@ class SimpleQueue {
    * @return true Element was successfully added.
    * @return false Element has not been added (eg. queue full).
    */
-  bool push(T t) {
+  bool push(const T& t) {
     if (_count < _size) {
       _buffer[_nextPosition++] = t;
       ++_count;

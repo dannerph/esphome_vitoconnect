@@ -230,7 +230,7 @@ void OptolinkP300::_receive() {
     if (_rcvBuffer[3] == 0x01) {
       // message is from READ command, so returning read value
       _tryOnData(&_rcvBuffer[7], dp->length);
-    } else if (_rcvBuffer[3] == 0x03) {
+    } else if (_rcvBuffer[3] == 0x02) {
       // message is from WRITE command, so returning written value
       _tryOnData(dp->data, dp->length);
     } else {
