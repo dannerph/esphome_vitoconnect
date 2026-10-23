@@ -73,6 +73,18 @@ class OptolinkDP {
   OptolinkDP(const OptolinkDP& obj);
 
   /**
+   * @brief Copy assignment operator (deep copy of the write data).
+   *
+   * Required because the queue stores elements by assignment. Without it,
+   * the implicit shallow copy leaves a dangling `data` pointer once the
+   * temporary passed to `push()` is destroyed.
+   *
+   * @param obj Object to be copied.
+   * @return OptolinkDP& Reference to this object.
+   */
+  OptolinkDP& operator=(const OptolinkDP& obj);
+
+  /**
    * @brief Destroy the OptolinkDP object
    * 
    */
