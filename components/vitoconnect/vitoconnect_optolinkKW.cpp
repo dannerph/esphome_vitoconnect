@@ -130,6 +130,11 @@ void OptolinkKW::_send() {
     memcpy(&buff[4], dp->data, length);
     _rcvLen = 1;  // expected answer length is only ACK (0x00)
     _uart->write_array(buff, 4 + length);
+    char hex[(MAX_DP_LENGTH + 4) * 3 + 1] = {0};
+    for (uint8_t i = 0; i < 4 + length; ++i) {
+      snprintf(&hex[i * 3], 4, "%02X ", buff[i]);
+    }
+    ESP_LOGI(TAG, "KW write to 0x%04X: %s", address, hex);
   } else {
     // type is READ
     // has fixed length of 4 chars
@@ -146,13 +151,25 @@ void OptolinkKW::_send() {
 }
 
 void OptolinkKW::_receive() {
-  while (_uart->available() != 0) {  // read complete RX buffer
+  while (_uart->available() != 0 && _rcvBufferLen < _rcvLen && _rcvBufferLen < sizeof(_rcvBuffer)) {  // read expected bytes only
     _rcvBuffer[_rcvBufferLen] = _uart->read();
     ++_rcvBufferLen;
     _lastMillis = millis();
   }
   if (_rcvBufferLen == _rcvLen) {  // message complete, TODO: check message (eg 0x00 for READ messages)   
     OptolinkDP* dp = _queue.front();
+    if (dp->write) {
+      if (_rcvBuffer[0] == 0x00) {
+        ESP_LOGI(TAG, "KW write to 0x%04X acknowledged (0x00)", dp->address);
+        _tryOnData(_rcvBuffer, _rcvBufferLen);
+      } else {
+        ESP_LOGW(TAG, "KW write to 0x%04X not acknowledged, received 0x%02X", dp->address, _rcvBuffer[0]);
+        _tryOnError(NACK);
+      }
+      _state = IDLE;
+      _lastMillis = millis();
+      return;
+    }
     ESP_LOGD(TAG, "Adding data to datapoint with address %x and received length %d", dp->address, _rcvBufferLen);
     _tryOnData(_rcvBuffer, _rcvBufferLen);
     _state = IDLE;

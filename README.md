@@ -79,6 +79,26 @@ binary_sensor:
 Tested with OptoLink ESP32 adapter from here:
 <https://github.com/openv/openv/wiki/Bauanleitung-ESP32-Adafruit-Feather-Huzzah32-and-Proto-Wing>
 
+### Writable values (`number`, experimental)
+
+A `number` reads a datapoint like a sensor and writes it when changed. The value is scaled by `factor` (`value = raw * factor`, `raw = round(value / factor)`), encoded little endian (length 1: uint8, 2: int16, 4: uint32). After the device acknowledges the write, the datapoint is read back immediately; the state is never set optimistically. Values outside `min_value`/`max_value` are rejected on the device.
+
+```yaml
+number:
+  - platform: vitoconnect
+    name: "Kesselsollwert"
+    address: 0x5502
+    length: 2
+    factor: 0.1
+    min_value: 43
+    max_value: 45
+    step: 1
+    mode: box
+    unit_of_measurement: "°C"
+```
+
+**Warning:** Only write addresses that are documented as writable for your controller. A successful ACK does not mean the value is actually used. Many values are stored in EEPROM, so avoid frequent writes from automations. See `example-kw-kc4.yaml`.
+
 ## Credits
 
 Built based on [VitoWifi] by [Bert Melis] and inspired by [vitowifi_esphome] by [Philipp Hack].

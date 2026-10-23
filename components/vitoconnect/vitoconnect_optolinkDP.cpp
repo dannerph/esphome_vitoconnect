@@ -53,10 +53,27 @@ OptolinkDP::OptolinkDP(const OptolinkDP& obj) {
   write = obj.write;
   data = nullptr;
   arg = obj.arg;
-  if (write) {
+  if (write && obj.data) {
     data = new uint8_t[length];
     memcpy(data, obj.data, length);
   }
+}
+
+OptolinkDP& OptolinkDP::operator=(const OptolinkDP& obj) {
+  if (this == &obj) return *this;
+  if (data) {
+    delete[] data;
+    data = nullptr;
+  }
+  address = obj.address;
+  length = obj.length;
+  write = obj.write;
+  arg = obj.arg;
+  if (write && obj.data) {
+    data = new uint8_t[length];
+    memcpy(data, obj.data, length);
+  }
+  return *this;
 }
 
 OptolinkDP::~OptolinkDP() {

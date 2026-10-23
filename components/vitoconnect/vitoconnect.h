@@ -55,32 +55,34 @@ class VitoConnect : public uart::UARTDevice, public PollingComponent {
     void onError(std::function<void(uint8_t, Datapoint*)> callback);
 
     /**
-     * @brief Enqueue a datapoint for writing.
-     * 
-     * The onData callback will be launched on success.
-     * 
-     * @tparam D Type of datapoint (inherited from class `Datapoint`)
-     * @tparam T Type of the value to be written
-     * @param datapoint Datapoint to be read, passed by reference.
-     * @param value Value to be written
+     * @brief Enqueue a raw write for a datapoint.
+     *
+     * `data` must contain `dp->getLength()` bytes (already encoded, little
+     * endian). The bytes are copied, so `data` may go out of scope afterwards.
+     * After a successful write (ACK) the datapoint is read back immediately,
+     * so its state reflects what the device actually reports.
+     *
+     * @param dp Datapoint to write (address and length are taken from it)
+     * @param data Raw bytes to write
      * @return true Enqueueing was successful
-     * @return false Enqueueing failed (eg. queue full)
+     * @return false Enqueueing failed (eg. queue full or no optolink)
      */
-    // template<class D, typename T>
-    // bool write(D& datapoint, T value);  // NOLINT todo: make it a const ref or pointer?
+    bool write_datapoint(Datapoint* dp, uint8_t* data);
 
   protected:
 
   private:
-    Optolink* _optolink;
+    Optolink* _optolink{nullptr};
     std::vector<Datapoint*> _datapoints;
     std::string protocol;
     struct CbArg {
-      CbArg(VitoConnect* vw, Datapoint* d) :
+      CbArg(VitoConnect* vw, Datapoint* d, bool w = false) :
         v(vw),
-        dp(d) {}
+        dp(d),
+        write(w) {}
       VitoConnect* v;
       Datapoint* dp;
+      bool write;
     };
     static void _onData(uint8_t* data, uint8_t len, void* arg);
     static void _onError(uint8_t error, void* arg);

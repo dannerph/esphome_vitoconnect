@@ -62,11 +62,12 @@ void VitoConnect::register_datapoint(Datapoint *datapoint) {
 }
 
 void VitoConnect::loop() {
-    _optolink->loop();
+    if (_optolink) _optolink->loop();
 }
 
 void VitoConnect::update() {
   // This will be called every "update_interval" milliseconds.
+  if (!_optolink) return;
   ESP_LOGD(TAG, "Schedule sensor update");
   
   for (Datapoint* dp : this->_datapoints) {
@@ -78,15 +79,47 @@ void VitoConnect::update() {
   }
 }
 
+bool VitoConnect::write_datapoint(Datapoint* dp, uint8_t* data) {
+  if (!_optolink || !dp || !data) {
+    ESP_LOGW(TAG, "Write not possible: optolink not initialized");
+    return false;
+  }
+  CbArg* arg = new CbArg(this, dp, true);
+  if (!_optolink->write(dp->getAddress(), dp->getLength(), data, reinterpret_cast<void*>(arg))) {
+    ESP_LOGW(TAG, "Write to 0x%04X could not be queued (queue full?)", dp->getAddress());
+    delete arg;
+    return false;
+  }
+  ESP_LOGI(TAG, "Write to 0x%04X queued (%d bytes)", dp->getAddress(), dp->getLength());
+  return true;
+}
+
 void VitoConnect::_onData(uint8_t* data, uint8_t len, void* arg) {
   CbArg* cbArg = reinterpret_cast<CbArg*>(arg);
+  if (cbArg->write) {
+    // Write confirmed: do not interpret the answer as datapoint value,
+    // read the datapoint back instead so the state reflects the device.
+    Datapoint* dp = cbArg->dp;
+    VitoConnect* v = cbArg->v;
+    ESP_LOGI(TAG, "Write to 0x%04X successful, reading back", dp->getAddress());
+    CbArg* readArg = new CbArg(v, dp);
+    if (!v->_optolink->read(dp->getAddress(), dp->getLength(), reinterpret_cast<void*>(readArg))) {
+      delete readArg;
+    }
+    delete cbArg;
+    return;
+  }
   cbArg->dp->decode(data, len, cbArg->dp);
   delete cbArg;
 }
 
 void VitoConnect::_onError(uint8_t error, void* arg) {
-  ESP_LOGD(TAG, "Error received: %d", error);
   CbArg* cbArg = reinterpret_cast<CbArg*>(arg);
+  if (cbArg->write) {
+    ESP_LOGW(TAG, "Write to 0x%04X failed, error %d", cbArg->dp->getAddress(), error);
+  } else {
+    ESP_LOGD(TAG, "Error received: %d", error);
+  }
   if (cbArg->v->_onErrorCb) cbArg->v->_onErrorCb(error, cbArg->dp);
   delete cbArg;
 }
